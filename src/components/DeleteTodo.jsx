@@ -5,9 +5,17 @@ import { deleteDoc, doc } from 'firebase/firestore';
 const DeleteTodo = () => {
    const [id,setId] = useState(0);
   
-  const handleDeleteTodo = () => {
-   
-  }
+   const handleDeleteTodo = async () => {
+    try {
+      const confirmDelete = window.confirm("Proceed to delete?");
+      if (!confirmDelete) return;
+      const documentRef = doc(database, "todo", id);
+      await deleteDoc(documentRef);
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
       <div className='flex flex-col items-center  gap-6 justify-center p-5'>

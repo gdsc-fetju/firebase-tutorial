@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { database } from '../firebaseConfig';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 
 const UpdateTodo = () => {
    const [data, setData] = useState([]);
@@ -11,8 +11,26 @@ const UpdateTodo = () => {
     setData({...data,...changedInput});
   }
   
-  const handleUpdateTodo = () => {
-  }
+  const handleUpdateTodo = async () => {
+    try {
+      const todoRef = doc(database, "todo", id);
+
+      const todoSnapshot = await getDoc(todoRef);
+      if (!todoSnapshot.exists()) {
+        console.log("Todo with provided ID does not exist");
+        return;
+      } 
+      await updateDoc(todoRef, data);
+      const updatedTodo = await getDoc(todoRef);
+      const updatedTitle = updatedTodo.data().title;
+      alert(`Todo "${updatedTitle}" updated successfully!`);
+      window.location.reload();
+      setData({ title: "", description: "" });
+      setId(0);
+    } catch (error) {
+      console.error("Error updating todo:", error);
+    }
+  };
 
   return (
       <div className='flex flex-col items-center  gap-6 justify-center p-5'>
